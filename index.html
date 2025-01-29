@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bitmap 8x8</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .bitmap-container {
+      display: grid;
+      grid-template-columns: repeat(8, 50px);
+      grid-gap: 5px;
+      justify-content: center;
+      margin: 20px auto;
+    }
+    .bit {
+      width: 50px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 18px;
+      text-align: center;
+      border: 2px solid #333;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #f0f0f0;
+      user-select: none;
+    }
+    .bit.active {
+      background-color: #4caf50;
+      color: white;
+    }
+    table {
+      margin: 20px auto;
+      border-collapse: collapse;
+      text-align: center;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 8px 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bitmap 8x8</h1>
+  <div class="bitmap-container" id="bitmap">
+    <!-- Aquí se generará el bitmap dinámicamente -->
+  </div>
+  <h2>Valores por filas y columnas</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Fila</th>
+        <th>Valor (Binario)</th>
+        <th>Valor (Decimal)</th>
+      </tr>
+    </thead>
+    <tbody id="rowValues">
+      <!-- Aquí se generarán los valores de las filas -->
+    </tbody>
+  </table>
+  <table>
+    <thead>
+      <tr>
+        <th>Columna</th>
+        <th>Valor (Binario)</th>
+        <th>Valor (Decimal)</th>
+      </tr>
+    </thead>
+    <tbody id="columnValues">
+      <!-- Aquí se generarán los valores de las columnas -->
+    </tbody>
+  </table>
+
+  <script>
+    // Crear el array 2D del bitmap
+    const bitmap = Array(8).fill(null).map(() => Array(8).fill(0));
+
+    // Referencias
+    const bitmapContainer = document.getElementById('bitmap');
+    const rowValuesContainer = document.getElementById('rowValues');
+    const columnValuesContainer = document.getElementById('columnValues');
+
+    // Función para actualizar los valores por filas y columnas
+    function updateValues() {
+      // Actualizar filas
+      rowValuesContainer.innerHTML = bitmap.map((row, rowIndex) => {
+        const binaryValue = row.join('');
+        const decimalValue = parseInt(binaryValue, 2);
+        return `
+          <tr>
+            <td>Fila ${rowIndex + 1}</td>
+            <td>${binaryValue}</td>
+            <td>${decimalValue}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // Actualizar columnas
+      const columnValues = Array(8).fill(0).map((_, colIndex) => {
+        const column = bitmap.map(row => row[colIndex]);
+        const binaryValue = column.join('');
+        const decimalValue = parseInt(binaryValue, 2);
+        return { binaryValue, decimalValue };
+      });
+
+      columnValuesContainer.innerHTML = columnValues.map((col, colIndex) => `
+        <tr>
+          <td>Columna ${colIndex + 1}</td>
+          <td>${col.binaryValue}</td>
+          <td>${col.decimalValue}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Crear el bitmap en el DOM
+    for (let row = 0; row < 8; row++) {
+      for (let col = 0; col < 8; col++) {
+        const bitDiv = document.createElement('div');
+        bitDiv.className = 'bit';
+        bitDiv.textContent = '0';
+        bitDiv.addEventListener('click', () => {
+          // Alternar el bit
+          bitmap[row][col] = bitmap[row][col] === 0 ? 1 : 0;
+          bitDiv.classList.toggle('active', bitmap[row][col] === 1);
+          bitDiv.textContent = bitmap[row][col];
+          updateValues(); // Actualizar los valores
+        });
+        bitmapContainer.appendChild(bitDiv);
+      }
+    }
+
+    // Inicializar valores
+    updateValues();
+  </script>
+</body>
+</html>
